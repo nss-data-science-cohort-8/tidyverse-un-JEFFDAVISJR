@@ -197,24 +197,53 @@ life_exp_pivot
 19. What was the first country with a life expectancy to exceed 80?
 
 ```{r}
-
+#life_exp_pivot <- life_exp_pivot %>% 
+  #select(-X)
+life_exp_pivot <- life_exp_pivot %>% 
+  mutate(Year = str_remove(Year, "X"))
+life_exp_pivot
+first_to_eighty <- life_exp_pivot %>% 
+  filter(Life_Exp >= 80) %>% 
+  arrange(Year) 
+first_to_eighty
 ```
 
 20. Merge `gdp_df` and `life_expectancy`, keeping all countries and years that appear in both tibbles. Save the result to a new tibble named `gdp_le`. If you get any errors in doing this, read them carefully and correct them. Look at the first five rows of your new data frame to confirm it merged correctly. Also, check the last five rows to make sure the data is clean and as expected.
 
 ```{r}
-
+gdp_le <- merge(gdp, life_exp_pivot, by = c("Country", "Year"))
+gdp_le
 ```
 
 21. Create a new tibble, named `gdp_le_2021` by extracting data for the year 2021 from `gdp_le`. How many countries have a life expectancy of at least 80 in 2021?
 
 ```{r}
+gdp_le_2021 <- gdp_le %>% 
+  filter(Year == 2021)
+gdp_le_2021
 
+gdp_le_2021_eighty <- gdp_le_2021 %>% 
+  filter(Life_Exp >= 80)
+gdp_le_2021_eighty
 ```
 
 22. Find the countries that had the top 3 largest GDP per capita figures for 2021. Create a plot showing the change in life expectancy over time for these three countries. This plot should be faceted so that each country is contained in its own figure.
 
 ```{r}
+gdp_le_2021_top_three <- gdp_le_2021 %>% 
+  arrange(desc(Value))
+head(gdp_le_2021_top_three, 3)
+
+top_three <- c('Luxembourg', 'Singapore', 'Ireland')
+
+top_three_gdp_le <- gdp_le %>%
+  filter(Country %in% top_three)
+top_three_gdp_le
+
+ggplot(top_three_gdp_le, aes(x=Year, y=Value))+
+  geom_line(stat='identity', fill="forest green")+
+  facet_wrap(~Country)
+
 
 ```
 
